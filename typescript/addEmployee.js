@@ -1,0 +1,359 @@
+function addEmployeeInit() {
+    const form = document.getElementById("addEmployeeForm");
+    if (!form)
+        return;
+    form.addEventListener("submit", (e) => {
+        var _a, _b, _c, _d, _e, _f, _g, _h, _j;
+        e.preventDefault();
+        const params = new URLSearchParams(window.location.search);
+        const mode = params.get("mode");
+        if (mode === "edit" || mode === "view") {
+            return;
+        }
+        const empId = ((_a = document.getElementById("empId")) === null || _a === void 0 ? void 0 : _a.value.trim()) || "";
+        const firstName = ((_b = document.getElementById("firstName")) === null || _b === void 0 ? void 0 : _b.value.trim()) || "";
+        const lastName = ((_c = document.getElementById("lastName")) === null || _c === void 0 ? void 0 : _c.value.trim()) || "";
+        const email = ((_d = document.getElementById("email")) === null || _d === void 0 ? void 0 : _d.value.trim()) || "";
+        const joiningDate = ((_e = document.getElementById("joiningDate")) === null || _e === void 0 ? void 0 : _e.value.trim()) || "";
+        const location = ((_f = document.getElementById("location")) === null || _f === void 0 ? void 0 : _f.value.trim()) || "";
+        const department = ((_g = document.getElementById("department")) === null || _g === void 0 ? void 0 : _g.value.trim()) || "";
+        const role = ((_h = document.getElementById("role")) === null || _h === void 0 ? void 0 : _h.value.trim()) || "";
+        const status = ((_j = document.getElementById("status")) === null || _j === void 0 ? void 0 : _j.value.trim()) || "";
+        if (!empId || !firstName || !lastName || !email || !joiningDate) {
+            alert("Please fill all required fields");
+            return;
+        }
+        const storedData = localStorage.getItem("employees");
+        let employees = storedData ? JSON.parse(storedData) : [];
+        const newEmployee = {
+            empId,
+            firstName,
+            lastName,
+            email,
+            joiningDate,
+            location,
+            department,
+            role,
+            status,
+        };
+        employees.push(newEmployee);
+        localStorage.setItem("employees", JSON.stringify(employees));
+        form.reset();
+        const msg = document.getElementById("successMessage");
+        if (msg) {
+            msg.style.display = "flex";
+            setTimeout(() => {
+                msg.style.display = "none";
+            }, 3000);
+        }
+    });
+}
+document.addEventListener("DOMContentLoaded", () => {
+    addEmployeeInit();
+});
+//viewEditModeEmployees
+document.addEventListener("DOMContentLoaded", function () {
+    const params = new URLSearchParams(window.location.search);
+    const mode = params.get("mode");
+    const empId = params.get("empId");
+    if (mode && empId) {
+        loadEmployeeData(mode, empId);
+    }
+});
+//________LOAD EMPLOYEE FOR VIEW/EDIT
+function loadEmployeeData(mode, empId) {
+    const employees = JSON.parse(localStorage.getItem("employees")) || [];
+    const emp = employees.find(e => e.empId === empId);
+    if (!emp) {
+        alert("Employee not found!");
+        history.back();
+        return;
+    }
+    populateForm(emp);
+    updatePageHeader(mode);
+    if (mode === "view") {
+        initViewMode();
+    }
+    else if (mode === "edit") {
+        initEditMode(empId);
+    }
+}
+// ─── Populate Form Fields ───────────────────────────
+function populateForm(emp) {
+    document.getElementById("empId").value = emp.empId || "";
+    document.getElementById("firstName").value = emp.firstName || "";
+    document.getElementById("lastName").value = emp.lastName || "";
+    document.getElementById("email").value = emp.email || "";
+    document.getElementById("joiningDate").value = emp.joiningDate || "";
+    document.getElementById("role").value = emp.role || "";
+    document.getElementById("location").value = emp.location || "";
+    document.getElementById("department").value = emp.department || "";
+    document.getElementById("status").value = emp.status || "";
+}
+// ─── Update Page Header ─────────────────────────────
+function updatePageHeader(mode) {
+    const headings = {
+        view: { title: "View Employee", subtitle: "Employee details (read-only)." },
+        edit: { title: "Edit Employee", subtitle: "Update employee details." },
+    };
+    const { title, subtitle } = headings[mode] || {};
+    if (title)
+        document.querySelector(".page-header h2").textContent = title;
+    if (subtitle)
+        document.querySelector(".page-header p").textContent = subtitle;
+}
+// ─── View Mode ──────────────────────────────────────
+function initViewMode() {
+    document
+        .querySelectorAll("#addEmployeeForm input, #addEmployeeForm select")
+        .forEach(el => {
+        el.setAttribute("disabled", "true");
+        el.style.backgroundColor = "#f5f5f5";
+        el.style.color = "#888";
+        el.style.cursor = "not-allowed";
+        el.style.border = "1px solid #e0e0e0";
+    });
+    const form = document.querySelector("#addEmployeeForm");
+    const banner = document.createElement("div");
+    banner.style.cssText = `
+        background: #fff8e1;
+        border: 1px solid #ffe082;
+        border-left: 4px solid #ffc107;
+        color: #7d6200;
+        padding: 10px 16px;
+        border-radius: 6px;
+        margin-bottom: 16px;
+        font-size: 13px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    `;
+    banner.innerHTML = `<i class="bi bi-eye" style="font-size:16px;color:#ffc107;"></i> 
+        <strong>View Only</strong> — This form is in read-only mode. You cannot make changes.`;
+    form.prepend(banner);
+    form.style.position = "relative";
+    form.style.opacity = "0.92";
+    const pageHeader = document.querySelector(".page-header h2");
+    if (pageHeader) {
+        const badge = document.createElement("span");
+        badge.textContent = "VIEW ONLY";
+        badge.style.cssText = `
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffc107;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 4px;
+            margin-left: 10px;
+            vertical-align: middle;
+            letter-spacing: 0.5px;
+        `;
+        pageHeader.appendChild(badge);
+    }
+    document.querySelector(".form-actions .btn-primary").style.display = "none";
+    const backBtn = document.querySelector(".form-actions .btn-light");
+    backBtn.textContent = "← Back";
+    backBtn.style.backgroundColor = "#f0f0f0";
+    backBtn.style.color = "#555";
+    backBtn.style.border = "1px solid #ccc";
+    backBtn.addEventListener("click", () => history.back());
+}
+// ─── Edit Mode ──────────────────────────────────────
+function initEditMode(empId) {
+    document.getElementById("empId").setAttribute("disabled", "true");
+    const form = document.querySelector("#addEmployeeForm");
+    const banner = document.createElement("div");
+    banner.style.cssText = `
+        background: #e8f4fd;
+        border: 1px solid #90caf9;
+        border-left: 4px solid #1976d2;
+        color: #0d47a1;
+        padding: 10px 16px;
+        border-radius: 6px;
+        margin-bottom: 16px;
+        font-size: 13px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    `;
+    banner.innerHTML = `<i class="bi bi-pencil-square" style="font-size:16px;color:#1976d2;"></i> 
+        <strong>Edit Mode</strong> — You are editing this employee's details. Save changes when done.`;
+    form.prepend(banner);
+    document
+        .querySelectorAll("#addEmployeeForm input, #addEmployeeForm select")
+        .forEach(el => {
+        if (!el.hasAttribute("disabled")) {
+            el.style.border = "1px solid #90caf9";
+            el.style.backgroundColor = "#f0f7ff";
+            el.style.transition = "border 0.2s ease";
+            el.addEventListener("focus", () => {
+                el.style.border = "1.5px solid #1976d2";
+                el.style.backgroundColor = "#fff";
+                el.style.boxShadow = "0 0 0 3px rgba(25,118,210,0.15)";
+            });
+            el.addEventListener("blur", () => {
+                el.style.border = "1px solid #90caf9";
+                el.style.backgroundColor = "#f0f7ff";
+                el.style.boxShadow = "none";
+            });
+        }
+    });
+    const pageHeader = document.querySelector(".page-header h2");
+    if (pageHeader) {
+        const badge = document.createElement("span");
+        badge.textContent = "EDIT MODE";
+        badge.style.cssText = `
+            background: #e3f2fd;
+            color: #1565c0;
+            border: 1px solid #90caf9;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 4px;
+            margin-left: 10px;
+            vertical-align: middle;
+            letter-spacing: 0.5px;
+        `;
+        pageHeader.appendChild(badge);
+    }
+    const saveBtn = document.querySelector(".form-actions .btn-primary");
+    saveBtn.textContent = "Save Changes";
+    saveBtn.style.backgroundColor = "#1976d2";
+    saveBtn.style.boxShadow = "0 2px 6px rgba(25,118,210,0.4)";
+    const cancelBtn = document.querySelector(".form-actions .btn-light");
+    cancelBtn.textContent = "X Cancel";
+    cancelBtn.style.backgroundColor = "#f5f5f5";
+    cancelBtn.style.color = "#555";
+    cancelBtn.style.border = "1px solid #ccc";
+    cancelBtn.addEventListener("click", () => history.back());
+    let submitted = false;
+    document.getElementById("addEmployeeForm").addEventListener("submit", function (e) {
+        e.preventDefault();
+        if (submitted)
+            return;
+        submitted = true;
+        saveEditedEmployee(empId);
+    });
+}
+function saveEditedEmployee(empId) {
+    let employees = JSON.parse(localStorage.getItem("employees") || "[]");
+    const index = employees.findIndex(e => e.empId === empId);
+    if (index === -1) {
+        alert("Employee not found to update!");
+        return;
+    }
+    const existing = employees[index];
+    employees[index] = {
+        empId,
+        firstName: document.getElementById("firstName").value.trim() || existing.firstName,
+        lastName: document.getElementById("lastName").value.trim() || existing.lastName,
+        email: document.getElementById("email").value.trim() || existing.email,
+        joiningDate: document.getElementById("joiningDate").value || existing.joiningDate,
+        location: document.getElementById("location").value.trim() || existing.location,
+        department: document.getElementById("department").value.trim() || existing.department,
+        role: document.getElementById("role").value.trim() || existing.role,
+        status: document.getElementById("status").value.trim() || existing.status,
+    };
+    localStorage.setItem("employees", JSON.stringify(employees));
+    const msg = document.getElementById("successMessage");
+    msg.style.display = "flex";
+    setTimeout(() => {
+        msg.style.display = "none";
+        history.back();
+    }, 1500);
+}
+// ─── Profile Load ───────────────────────────────────
+function profileLoad() {
+    const employees = JSON.parse(localStorage.getItem("employees") || "[]");
+    const profileName = document.querySelector(".profile-info .profile-name");
+    const profileRole = document.querySelector(".profile-info .profile-role");
+    const adminUser = employees.find(emp => emp.role && emp.role.toLowerCase() === "admin");
+    if (adminUser) {
+        profileName.textContent = `${adminUser.firstName || ""} ${adminUser.lastName || ""}`;
+        profileRole.textContent = adminUser.role || "";
+    }
+    else {
+        profileName.textContent = "";
+        profileRole.textContent = "";
+    }
+}
+document.addEventListener("DOMContentLoaded", function () {
+    profileLoad();
+});
+function minimize() {
+    const sidebar = document.querySelector(".sidebar");
+    const main = document.querySelector(".main");
+    const spans = sidebar === null || sidebar === void 0 ? void 0 : sidebar.querySelectorAll(".menu span");
+    const titles = sidebar === null || sidebar === void 0 ? void 0 : sidebar.querySelectorAll(".sidebar-title");
+    const updateBox = sidebar === null || sidebar === void 0 ? void 0 : sidebar.querySelector(".update-box");
+    const chevrons = sidebar === null || sidebar === void 0 ? void 0 : sidebar.querySelectorAll(".menu i");
+    const listItems = sidebar === null || sidebar === void 0 ? void 0 : sidebar.querySelectorAll(".menu li");
+    const tezoText = document.querySelector(".logo-box span");
+    const tezoLogo = document.querySelector(".logo-box img");
+    const logoBox = document.querySelector(".logo-box");
+    const handlePic = document.querySelector(".handle-pic");
+    sidebar === null || sidebar === void 0 ? void 0 : sidebar.classList.toggle("collapsed");
+    if (sidebar === null || sidebar === void 0 ? void 0 : sidebar.classList.contains("collapsed")) {
+        sidebar.style.width = "70px";
+        if (main)
+            main.style.marginLeft = "80px";
+        spans === null || spans === void 0 ? void 0 : spans.forEach(el => (el.style.display = "none"));
+        titles === null || titles === void 0 ? void 0 : titles.forEach(el => (el.style.display = "none"));
+        chevrons === null || chevrons === void 0 ? void 0 : chevrons.forEach(el => (el.style.display = "none"));
+        if (updateBox)
+            updateBox.style.display = "none";
+        if (tezoText)
+            tezoText.style.display = "none";
+        if (tezoLogo) {
+            tezoLogo.style.width = "40px";
+            tezoLogo.style.maxWidth = "none";
+            tezoLogo.style.marginLeft = "10px";
+        }
+        if (logoBox) {
+            logoBox.style.width = "40px";
+            logoBox.style.overflow = "hidden";
+        }
+        handlePic === null || handlePic === void 0 ? void 0 : handlePic.classList.add("rotate");
+        listItems === null || listItems === void 0 ? void 0 : listItems.forEach(li => {
+            li.style.padding = "20px";
+            li.style.marginTop = "10px";
+            li.style.justifyContent = "center";
+        });
+    }
+    else {
+        if (sidebar)
+            sidebar.style.width = "240px";
+        if (main)
+            main.style.marginLeft = "250px";
+        spans === null || spans === void 0 ? void 0 : spans.forEach(el => (el.style.display = ""));
+        titles === null || titles === void 0 ? void 0 : titles.forEach(el => (el.style.display = ""));
+        chevrons === null || chevrons === void 0 ? void 0 : chevrons.forEach(el => (el.style.display = ""));
+        if (updateBox)
+            updateBox.style.display = "";
+        if (tezoText)
+            tezoText.style.display = "";
+        if (tezoLogo) {
+            tezoLogo.style.width = "110px";
+            tezoLogo.style.maxWidth = "";
+            tezoLogo.style.marginLeft = "";
+        }
+        if (logoBox) {
+            logoBox.style.width = "250px";
+            logoBox.style.overflow = "";
+        }
+        if (handlePic) {
+            handlePic.style.left = "-36px";
+            handlePic.classList.remove("rotate");
+        }
+        listItems === null || listItems === void 0 ? void 0 : listItems.forEach(li => {
+            li.style.padding = "";
+            li.style.marginTop = "";
+            li.style.justifyContent = "";
+        });
+    }
+}
+document.addEventListener("DOMContentLoaded", function () {
+    minimize();
+});
+//# sourceMappingURL=addEmployee.js.map

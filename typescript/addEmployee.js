@@ -353,7 +353,4 @@ function minimize() {
         });
     }
 }
-document.addEventListener("DOMContentLoaded", function () {
-    minimize();
-});
 //# sourceMappingURL=addEmployee.js.map

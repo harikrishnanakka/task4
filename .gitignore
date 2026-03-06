@@ -1,0 +1,15 @@
+#ignore node module
+node_modules/
+
+#ignore specific files
+package-lock.json
+package.json
+
+# Build output
+dist/
+build/
+
+# Generated type declarations
+dist/**/*.d.ts
+dist/**/*.d.ts.map
+dist/**/*.js.map

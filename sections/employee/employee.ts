@@ -490,7 +490,14 @@ function employeeTableInit(): void {
             if (this.classList.contains("active")) {
 
                 letters.forEach(l => l.classList.remove("active"));
-                rows.forEach(row => (row as HTMLTableRowElement).style.display = "");
+                rows.forEach(row => {
+
+                    (row as HTMLTableRowElement).style.display = "";
+
+                    const cb = row.querySelector<HTMLInputElement>("input[type='checkbox']");
+                    if (cb) cb.checked = false;
+                });
+
                 if (filterIcon) filterIcon.style.color = "black";
 
                 updateExportButton();

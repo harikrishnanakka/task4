@@ -738,12 +738,12 @@ function setupEllipseOptions(): void {
 
             if (event.target.classList.contains("view")) {
                 window.location.href =
-                    `../Html/addEmployee.html?mode=view&empId=${encodeURIComponent(empId)}`;
+                    `../addEmployee/addEmployee.html?mode=view&empId=${encodeURIComponent(empId)}`;
             }
 
             if (event.target.classList.contains("edit")) {
                 window.location.href =
-                    `../Html/addEmployee.html?mode=edit&empId=${encodeURIComponent(empId)}`;
+                    `../addEmployee/addEmployee.html?mode=edit&empId=${encodeURIComponent(empId)}`;
             }
 
             if (event.target.classList.contains("delete")) {

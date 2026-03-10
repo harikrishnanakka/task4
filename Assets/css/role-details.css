@@ -22,16 +22,28 @@ body {
     display: flex;
     flex-direction: column;
     height: 100vh;
+    padding-top: -40px;
     position: fixed;
+    padding-top:75px;
     top: 0;
     left: 0;
     z-index: 1000;
     overflow: hidden;
     transition: width 0.3s ease;
 }
+.logo-box{
+    position: fixed;
+    top:10px;
+    left:10px;
+    z-index:1001;
+    width:250px;
+    pointer-events: none;
+}
 
 .logo {
     width: 110px;
+    display: block;
+    min-width: 110px;
     margin-bottom: 20px;
     margin-top: 10px;
 }
@@ -275,6 +287,9 @@ body {
     cursor: pointer;
 
 }
+.rotate{
+    transform: translateY(-50%) rotate(180deg);
+}
 
 .profile-info {
     display: flex;
@@ -504,4 +519,19 @@ body {
 
 .view-link:hover {
     color: #e53935;
+}
+/* collapse */
+.sidebar.collapsed{
+    width:80px;
+}
+.sidebar.collapsed ~ .main{
+margin-left:80px;
+
+}
+.sidebar.collapsed ~ .logo-box{
+width:80px;
+
+}
+.addEmployeeanchor{
+    text-decoration: none;
 }

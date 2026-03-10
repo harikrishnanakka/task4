@@ -31,10 +31,12 @@ function addEmployeeInit(): void {
         const lastName = (document.getElementById("lastName") as HTMLInputElement | null)?.value.trim() || "";
         const email = (document.getElementById("email") as HTMLInputElement | null)?.value.trim() || "";
         const joiningDate = (document.getElementById("joiningDate") as HTMLInputElement | null)?.value.trim() || "";
-        const location = (document.getElementById("location") as HTMLInputElement | null)?.value.trim() || "";
-        const department = (document.getElementById("department") as HTMLInputElement | null)?.value.trim() || "";
+        const location = (document.getElementById("location") as HTMLSelectElement | null)?.value.trim() || "";
+        const department = (document.getElementById("department") as HTMLSelectElement | null)?.value.trim() || "";
         const role = (document.getElementById("role") as HTMLInputElement | null)?.value.trim() || "";
-        const status = (document.getElementById("status") as HTMLInputElement | null)?.value.trim() || "";
+        const status = (document.getElementById("status") as HTMLSelectElement | null)?.value.trim() || "";
+
+        console.log(empId,firstName,lastName,email,joiningDate);
 
         if (!empId || !firstName || !lastName || !email || !joiningDate) {
             alert("Please fill all required fields");
@@ -54,6 +56,7 @@ function addEmployeeInit(): void {
             department,
             role,
             status,
+            image: ""
         };
 
         employees.push(newEmployee);
@@ -122,8 +125,8 @@ function populateForm(emp: Employee): void {
     (document.getElementById("lastName") as HTMLInputElement).value = emp.lastName || "";
     (document.getElementById("email") as HTMLInputElement).value = emp.email || "";
     (document.getElementById("joiningDate") as HTMLInputElement).value = emp.joiningDate || "";
-    (document.getElementById("role") as HTMLSelectElement).value = emp.role || "";
-    (document.getElementById("location") as HTMLInputElement).value = emp.location || "";
+    (document.getElementById("role") as HTMLInputElement).value = emp.role || "";
+    (document.getElementById("location") as HTMLSelectElement).value = emp.location || "";
     (document.getElementById("department") as HTMLSelectElement).value = emp.department || "";
     (document.getElementById("status") as HTMLSelectElement).value = emp.status || "";
 }
@@ -281,7 +284,7 @@ function initEditMode(empId: string): void {
 
     const saveBtn = document.querySelector<HTMLButtonElement>(".form-actions .btn-primary");
     saveBtn.textContent = "Save Changes";
-    saveBtn.style.backgroundColor = "#1976d2";
+    // saveBtn.style.backgroundColor = "#";
     saveBtn.style.boxShadow = "0 2px 6px rgba(25,118,210,0.4)";
 
     const cancelBtn = document.querySelector<HTMLButtonElement>(".form-actions .btn-light");
@@ -321,10 +324,11 @@ function saveEditedEmployee(empId: string): void {
         lastName: (document.getElementById("lastName") as HTMLInputElement).value.trim() || existing.lastName,
         email: (document.getElementById("email") as HTMLInputElement).value.trim() || existing.email,
         joiningDate: (document.getElementById("joiningDate") as HTMLInputElement).value || existing.joiningDate,
-        location: (document.getElementById("location") as HTMLInputElement).value.trim() || existing.location,
+        location: (document.getElementById("location") as HTMLSelectElement).value.trim() || existing.location,
         department: (document.getElementById("department") as HTMLSelectElement).value.trim() || existing.department,
-        role: (document.getElementById("role") as HTMLSelectElement).value.trim() || existing.role,
+        role: (document.getElementById("role") as HTMLInputElement).value.trim() || existing.role,
         status: (document.getElementById("status") as HTMLSelectElement).value.trim() || existing.status,
+        image:""
     };
 
     localStorage.setItem("employees", JSON.stringify(employees));
@@ -442,3 +446,38 @@ function minimize(): void {
     }
 }
 
+function AddDropdowns(): void {
+
+    const location = document.getElementById("location") as HTMLSelectElement;
+    const department = document.getElementById("department") as HTMLSelectElement;
+    const status = document.getElementById("status") as HTMLSelectElement;
+
+    const locations = ["Hyderabad", "Bangalore", "Chennai", "Mumbai", "Pune"];
+    const departments = ["Product Engg", "HR", "Finance", "Marketing", "Sales","IT","Testing"];
+    const statuses = ["Active", "Inactive"];
+
+
+    function fillDropdown(select: HTMLSelectElement, data: string[]) {
+
+        const defaultOption = document.createElement("option");
+        defaultOption.value = "";
+        defaultOption.textContent = "Select";
+        select.appendChild(defaultOption);
+
+        data.forEach(item => {
+            const option = document.createElement("option");
+            option.value = item;
+            option.textContent = item;
+            select.appendChild(option);
+        });
+    }
+
+    fillDropdown(location, locations);
+    fillDropdown(department, departments);
+    fillDropdown(status, statuses);
+}
+
+
+document.addEventListener("DOMContentLoaded", () => {
+    AddDropdowns();
+});

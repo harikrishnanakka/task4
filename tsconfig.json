@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
 
-    "target": "ES6",                     //ECMA script version
-    "module": "commonjs",                    //module
+    "target": "ES6",                     
+    "module": "commonjs",                    
     "lib": ["dom", "es2016","dom.iterable"],  
 
     "strict": false,

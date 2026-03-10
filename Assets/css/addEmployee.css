@@ -96,9 +96,6 @@
     border: none;
 }
 
-.btn-light:hover {
-    background: #eaeaea;
-}
 
 .btn-primary {
     background: #e53935;
@@ -112,9 +109,7 @@
     height: 25px;
 }
 
-.btn-primary:hover {
-    background: #4338ca;
-}
+
 
 /* Success Message */
 
@@ -131,4 +126,20 @@
     align-items: center;
     gap: 8px;
     border: 1px solid #b7ebd3;
+}
+
+/* collapse */
+.sidebar.collapsed{
+    width:80px;
+}
+.sidebar.collapsed ~ .main{
+margin-left:80px;
+
+}
+.sidebar.collapsed ~ .logo-box{
+width:80px;
+
+}
+.addEmployeeanchor{
+    text-decoration: none;
 }

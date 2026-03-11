@@ -1,3 +1,25 @@
+// EmployeeManager Prototype
+function EmployeeManager() {
+    this.storageKey = "employees";
+}
+
+EmployeeManager.prototype.getEmployees = function () {
+    return JSON.parse(localStorage.getItem(this.storageKey) || "[]");
+};
+
+EmployeeManager.prototype.saveEmployees = function (employees) {
+    localStorage.setItem(this.storageKey, JSON.stringify(employees));
+};
+
+EmployeeManager.prototype.deleteEmployee = function (empId) {
+    let employees = this.getEmployees();
+    employees = employees.filter(emp => emp.empId !== empId);
+    this.saveEmployees(employees);
+};
+
+const employeeManager = new EmployeeManager();
+
+
 //minimize and miximize sidebar
 function hidehandle(): void {
     const sidebar = document.querySelector<HTMLElement>(".sidebar");
@@ -345,8 +367,7 @@ function employeeTableInit(): void {
 
     function generateDynamicFilters(): void {
 
-        const employees: any[] =
-            JSON.parse(localStorage.getItem("employees") || "[]");
+        const employees = employeeManager.getEmployees();
 
         const statusSet: Set<string> = new Set();
         const locationSet: Set<string> = new Set();
@@ -415,7 +436,7 @@ function employeeTableInit(): void {
     function renderTable(): void {
         tableBody!.innerHTML = "";
 
-        const employees: any[] = JSON.parse(localStorage.getItem("employees") || "[]");
+        const employees = employeeManager.getEmployees();
 
         employees.forEach((emp: any) => {
             const status: string = emp.status || "Active" || "Inactive";
@@ -644,7 +665,7 @@ function setupDeleteFunction() {
 
     deleteBtn.addEventListener("click", function () {
         const rows = tableBody.querySelectorAll<HTMLTableRowElement>("tr");
-        let employees = JSON.parse(localStorage.getItem("employees")) || [];
+
 
         rows.forEach(row => {
             const checkbox = row.querySelector<HTMLInputElement>("input[type='checkbox']");
@@ -655,16 +676,12 @@ function setupDeleteFunction() {
 
             const empId = empIdCell ? empIdCell.textContent.trim() : null;
 
-            employees = employees.filter(emp =>
-                emp.empId !== empId
-            );
+            if (empId) {
+                employeeManager.deleteEmployee(empId);
+            }
 
             row.remove();
         });
-        localStorage.setItem(
-            "employees",
-            JSON.stringify(employees)
-        );
         deleteBtn.disabled = true;
         deleteBtn.style.background = "#f89191";
         updateExportButton();
@@ -755,12 +772,7 @@ function setupEllipseOptions(): void {
 
             if (event.target.classList.contains("delete")) {
 
-                let employees: Employee[] =
-                    JSON.parse(localStorage.getItem("employees") || "[]");
-
-                employees = employees.filter(emp => emp.empId !== empId);
-
-                localStorage.setItem("employees", JSON.stringify(employees));
+                employeeManager.deleteEmployee(empId);
 
                 row.remove();
 
